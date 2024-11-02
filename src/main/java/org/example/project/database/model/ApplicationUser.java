@@ -38,16 +38,18 @@ public class ApplicationUser implements UserDetails {
     )
     @Column(name = "role")
     private Set<Role> authorities;
+    @Column(name = "support_id")
+    private String supportId;
+    @Column(name = "tockenJWT")
+    private String tokenJWT;
 
-    /*@Column(name = "role", columnDefinition = "VARCHAR(45) DEFAULT ROLE_USER")
-    private String role = "ROLE_USER";*/
 
     public ApplicationUser() {
         super();
         this.authorities = new HashSet<>();
     }
 
-    public ApplicationUser(String name, String surName, String email, String password, LocalDate birthday, Set<Role> authorities) {
+    public ApplicationUser(String name, String surName, String email, String password, LocalDate birthday, Set<Role> authorities, String supportId) {
         super();
         this.name = name;
         this.surName = surName;
@@ -55,6 +57,7 @@ public class ApplicationUser implements UserDetails {
         this.password = password;
         this.birthday = birthday;
         this.authorities = authorities;
+        this.supportId = supportId;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

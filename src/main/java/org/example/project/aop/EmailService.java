@@ -10,9 +10,11 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.project.database.config.DataSourceConfiguration;
 import org.example.project.database.model.Product;
 import org.example.project.database.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -26,12 +28,10 @@ import java.util.Properties;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@EnableConfigurationProperties(EmailPropertiesConfiguration.class)
 public class EmailService {
-    @Value("${sent.from.store.login}")
-    private static String SENT_FROM_LOGIN;
-    @Value("${sent.from.store.password}")
-    private static String PASSWORD;
 
+    private final EmailPropertiesConfiguration properties;
     private static int totalPrice = 0;
 
     private final ObjectMapper objectMapper;
@@ -49,13 +49,13 @@ public class EmailService {
         Session session = Session.getInstance(prop, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(SENT_FROM_LOGIN, PASSWORD);
+                return new PasswordAuthentication(properties.getLogin(), properties.getPassword());
             }
         });
 
         try {
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(SENT_FROM_LOGIN));
+            message.setFrom(new InternetAddress(properties.getLogin()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject("Your receipt from Optical House");
 

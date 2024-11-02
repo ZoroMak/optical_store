@@ -1,8 +1,10 @@
 package org.example.project.database.config;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
@@ -23,21 +25,18 @@ import java.util.Properties;
 @EnableJpaRepositories(basePackages = {"org.example.project.database.repo"})
 @EnableScheduling
 @EnableMBeanExport
+@EnableConfigurationProperties(DataSourceConfiguration.class)
+@RequiredArgsConstructor
 public class DataBaseConfiguration {
-    @Value("${datasource.url}")
-    private String url;
-    @Value("${datasource.login}")
-    private String login;
-    @Value("${datasource.password}")
-    private String password;
+    private final DataSourceConfiguration dataSourceConfiguration;
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl(url);
-        dataSource.setUsername(login);
-        dataSource.setPassword(password);
+        dataSource.setUrl(dataSourceConfiguration.getUrl());
+        dataSource.setUsername(dataSourceConfiguration.getLogin());
+        dataSource.setPassword(dataSourceConfiguration.getPassword());
 
 
         return dataSource;

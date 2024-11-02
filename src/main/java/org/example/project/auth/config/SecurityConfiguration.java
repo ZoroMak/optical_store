@@ -30,13 +30,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @ComponentScan("org.example.project")
 @EnableWebSecurity
 public class SecurityConfiguration {
-
     private final RSAKeyProperties key;
-
     public SecurityConfiguration(RSAKeyProperties key) {
         this.key = key;
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -49,14 +46,12 @@ public class SecurityConfiguration {
         daoProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(daoProvider);
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                         auth.requestMatchers("/createOrder").authenticated();
-                        //auth.requestMatchers("/admin").hasRole("ADMIN");//Проверка роли
                         auth.anyRequest().permitAll();
                 });
 

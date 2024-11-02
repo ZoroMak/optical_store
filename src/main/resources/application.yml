@@ -1,0 +1,10 @@
+sent:
+  from:
+    store:
+      login: login
+      password: password
+
+datasource:
+  url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+  login: ${MYSQL_USERNAME}
+  password: ${MYSQL_PASSWORD}

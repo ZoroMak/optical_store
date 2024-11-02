@@ -2,17 +2,16 @@ package org.example.project.auth.contoller;
 
 import org.example.project.auth.dto.LoginRequestDTO;
 import org.example.project.auth.dto.LoginResponseDTO;
+import org.example.project.auth.dto.TokenRequestDTO;
 import org.example.project.auth.service.AuthenticationService;
 import org.example.project.database.model.ApplicationUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 public class AuthenticationController {
     @Autowired
     private AuthenticationService authenticationService;
@@ -34,5 +33,13 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 
         return ResponseEntity.ok(loginUser);
+    }
+
+    @PostMapping("/checkToken")
+    public ResponseEntity<Void> checkToken(@RequestBody TokenRequestDTO tokenRequest) {
+        if (!authenticationService.checkToken(tokenRequest.getUsername(), tokenRequest.getTokenJWT())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok().build();
     }
 }

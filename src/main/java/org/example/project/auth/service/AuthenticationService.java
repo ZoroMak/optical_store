@@ -42,7 +42,13 @@ public class AuthenticationService {
 
         authorities.add(userRole);
 
-        return applicationUserRepository.save(new ApplicationUser(name, surname, email, encodedPassword, LocalDate.parse(dateOfBirth), authorities));
+        String supportId = applicationUserRepository.getFreeSupportId();
+
+        if (supportId == null) {
+            supportId = applicationUserRepository.findFirstADMINUserEmail();
+        }
+
+        return applicationUserRepository.save(new ApplicationUser(name, surname, email, encodedPassword, LocalDate.parse(dateOfBirth), authorities, supportId));
     }
 
     public LoginResponseDTO loginUser(String email, String password) {
@@ -55,10 +61,28 @@ public class AuthenticationService {
 
             String token = tokenService.generateJwt(auth);
 
-            return new LoginResponseDTO(applicationUserRepository.findByEmail(email).get(), token);
+            ApplicationUser user = applicationUserRepository.findByEmail(email).get();
+            updateTokenJWT(user, token);
+
+            return new LoginResponseDTO(user, token);
 
         }catch (AuthenticationException e){
             return new LoginResponseDTO(null, "");
         }
+    }
+
+    private void updateTokenJWT(ApplicationUser user, String token) {
+
+        if (user != null) {
+            user.setTokenJWT(token);
+            applicationUserRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public boolean checkToken(String username, String token) {
+        ApplicationUser user = applicationUserRepository.findByEmail(username).get();
+        return user.getTokenJWT().equals(token);
     }
 }
